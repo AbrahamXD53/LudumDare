@@ -9,20 +9,24 @@ using UnityEngine.EventSystems;
 
 public class PartyController : MonoBehaviour
 {
+    /*Arreglo con los jugadores*/
     public List<PlayerInput> players;
+
+    /*Utilizada para controlar el acceso de los jugadores*/
     public int currentControllerIndex = 0;
 
+    /*Referencia estatica para acceder*/
     public static PartyController ControlController;
 
-    public Canvas canvas;
-
+    /*No necesaria*/
     public bool playersReady = false;
 
     public bool[] coldDowns = new bool[] { true, true, true, true };
 
+    /*Establece si se pueden leer las entradas*/
     public bool readingControls = false;
 
-    public EventSystem eventSystem;
+    public GamePad.Index[] controllers = new GamePad.Index[] { GamePad.Index.One, GamePad.Index.Two , GamePad.Index.Three , GamePad.Index.Four };
 
     IEnumerator StarColdDown(int control)
     {
@@ -51,14 +55,6 @@ public class PartyController : MonoBehaviour
         }
         return false;
     }
-    /*public void ShowControlCapture(GameType mode, int scene)
-    {
-        gameMode = mode;
-        canvas.enabled = true;
-        sceneToPlay = scene;
-        eventSystem.firstSelectedGameObject = null;
-        StartCoroutine(DetectControllers());
-    }*/
 
     private void Start()
     {
@@ -69,121 +65,60 @@ public class PartyController : MonoBehaviour
         }
         ControlController = this;
         DontDestroyOnLoad(gameObject);
-        canvas.enabled = false;
     }
 
     private void Update()
     {
         if (readingControls)
         {
-            if (!playersReady)
+            if (Input.anyKeyDown)
             {
-                if (Input.anyKeyDown)
+                if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    if (Input.GetKeyDown(KeyCode.Escape))
+                    if (IsControllIn(true, GamePad.Index.Any))
                     {
-                        if (IsControllIn(true, GamePad.Index.Any))
-                        {
 
-                            RemovePlayer(true, GamePad.Index.Any);
-                        }
-                        else
-                        {
-                            CloseSelector();
-                        }
+                        RemovePlayer(true, GamePad.Index.Any);
                     }
-                    if (Input.GetKeyDown(KeyCode.Space))
+                }
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    if (!IsControllIn(true, GamePad.Index.Any))
                     {
-                        if (!IsControllIn(true, GamePad.Index.Any))
-                        {
-                            AddPlayer(true, GamePad.Index.Any);
-                        }
-                        else
-                        {
-                            if (canvas.enabled)
-                            {
-                                for (int i = 0; i < players.Count; i++)
-                                {
-                                    if (players[i].useKeyboard)
-                                    {
-                                        players[i].ready = true;
-                                    }
-                                }
-                            }
-                        }
-
-
-                    }
-                    CheckController(GamePad.Index.One);
-                    CheckControllerQuit(GamePad.Index.One);
-                    CheckController(GamePad.Index.Two);
-                    CheckControllerQuit(GamePad.Index.Two);
-                    CheckController(GamePad.Index.Three);
-                    CheckControllerQuit(GamePad.Index.Three);
-                    CheckController(GamePad.Index.Four);
-                    CheckControllerQuit(GamePad.Index.Four);
-
-                    if (players != null)
-                    {
-                        var res = players.Count > 0;
-
+                        AddPlayer(true, GamePad.Index.Any);
                         for (int i = 0; i < players.Count; i++)
                         {
-                            res &= players[i].ready;
-                        }
-
-                        playersReady = res;
-                    }
-                }
-            }
-            else
-            {
-
-                /*Players are ready*/
-            }
-        }
-        if (canvas.enabled)
-        {
-            if (players != null)
-                for (int i = 0; i < players.Count; i++)
-                {
-                    if (players[i].ready)
-                        continue;
-                    if (players[i].useKeyboard)
-                    {
-
-                    }
-                    else
-                    {
-                        var sa = GamePad.GetAxis(GamePad.Axis.LeftStick, players[i].controlIndex).y;
-                        if (sa != 0)
-                        {
-                            if (coldDowns[i])
+                            if (players[i].useKeyboard)
                             {
-                                StartCoroutine(StarColdDown(i));
+                                players[i].ready = true;
                             }
                         }
                     }
                 }
+
+                foreach (var item in controllers)
+                {
+                    CheckController(item);
+                    CheckControllerQuit(item);
+                }
+
+                if (players != null)
+                {
+                    var res = players.Count > 0;
+
+                    for (int i = 0; i < players.Count; i++)
+                    {
+                        res &= players[i].ready;
+                    }
+
+                    playersReady = res;
+                }
+            }
+
         }
+        
     }
 
-    /*Make resets to work again*/
-    private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
-    {
-        if (arg0.buildIndex > 0)
-        {
-            canvas.enabled = false;
-        }
-        else
-        {
-            //canvas.enabled = true;
-            currentControllerIndex = 0;
-            players = null;
-
-            //StartCoroutine(DetectControllers());
-        }
-    }
 
     /*Check players lock*/
     private void CheckController(GamePad.Index index)
@@ -193,17 +128,11 @@ public class PartyController : MonoBehaviour
             if (!IsControllIn(false, index))
             {
                 AddPlayer(false, index);
-            }
-            else
-            {
-                if (canvas.enabled)
+                for (int i = 0; i < players.Count; i++)
                 {
-                    for (int i = 0; i < players.Count; i++)
+                    if (players[i].controlIndex == index)
                     {
-                        if (players[i].controlIndex == index)
-                        {
-                            players[i].ready = true;
-                        }
+                        players[i].ready = true;
                     }
                 }
             }
@@ -212,23 +141,13 @@ public class PartyController : MonoBehaviour
 
     private void CheckControllerQuit(GamePad.Index index)
     {
-        if (GamePad.GetButtonDown(GamePad.Button.B, index))
+        if (GamePad.GetButtonDown(GamePad.Button.Back, index))
         {
             if (IsControllIn(false, index))
             {
                 RemovePlayer(false, index);
             }
-            else
-            {
-                CloseSelector();
-            }
         }
-    }
-
-    public void CloseSelector()
-    {
-        readingControls = false;
-        canvas.enabled = false;
     }
 
     private void RemovePlayer(bool usek, GamePad.Index index)
@@ -267,13 +186,8 @@ public class PartyController : MonoBehaviour
         {
             cont = (from p in players where p.useKeyboard == false && p.controlIndex == index select p).First();
         }
-        if (canvas.enabled)
-        {
-        }
         for (int i = cont.realIndex + 1; i < players.Count; i++)
         {
-            //var prevPlayer = players[i].character;
-
             players[i].realIndex--;
 
         }
@@ -303,30 +217,23 @@ public class PartyController : MonoBehaviour
     }
 
 
-    public void ChangePicture(int ratio)
+    void ComoLeerEntradas()
     {
-        for (int i = 0; i < players.Count; i++)
-            if (players[i].useKeyboard)
-            {
-                if (players[i].ready)
-                    return;
-            }
+        //Para entrar es space o (a,x)
+        //para desconectar un control es escape o back
+        //los jugadores estan en el array players
+        //Saber de cual jugador vamos a pedir las entradas   jugador=1 -> 0
 
-    }
-    public void LockPlayer()
-    {
-        if (IsControllIn(true, 0))
+        //Saber si se trata de un jugador con teclado
+        if (players[0/*jugador*/].useKeyboard) {
+            //En este caso simplemente utilizar el sistema de unity
+            var res = Input.GetButton("Jump");
+            //O
+            var resKey = Input.GetKeyDown(KeyCode.A);
+        }
+        else//El jugador esta utilizando controll
         {
-            if (canvas.enabled)
-            {
-                for (int i = 0; i < players.Count; i++)
-                {
-                    if (players[i].useKeyboard)
-                    {
-                        players[i].ready = true;
-                    }
-                }
-            }
+            var res = GamePad.GetButtonDown(GamePad.Button.A, players[0/*jugador*/].controlIndex);
         }
     }
 }
