@@ -51,14 +51,14 @@ public class PartyController : MonoBehaviour
         }
         return false;
     }
-    public void ShowControlCapture(GameType mode, int scene)
+    /*public void ShowControlCapture(GameType mode, int scene)
     {
         gameMode = mode;
         canvas.enabled = true;
         sceneToPlay = scene;
         eventSystem.firstSelectedGameObject = null;
         StartCoroutine(DetectControllers());
-    }
+    }*/
 
     private void Start()
     {
@@ -138,7 +138,7 @@ public class PartyController : MonoBehaviour
             }
             else
             {
-                
+
                 /*Players are ready*/
             }
         }
@@ -151,21 +151,7 @@ public class PartyController : MonoBehaviour
                         continue;
                     if (players[i].useKeyboard)
                     {
-                        if (Input.GetButtonDown("Vertical"))
-                        {
-                            SoundManager.Instance.PlayEffect("Button1");
 
-
-                            if (Input.GetAxisRaw("Vertical") > 0)
-                                players[i].character++;
-                            else
-                                players[i].character--;
-                            if (players[i].character > Characters.Pina)
-                                players[i].character = Characters.SrPenguin;
-                            if (players[i].character < Characters.SrPenguin)
-                                players[i].character = Characters.Pina;
-                            characterSelectors[i].sprite = charactersImage[(int)players[i].character];
-                        }
                     }
                     else
                     {
@@ -174,18 +160,8 @@ public class PartyController : MonoBehaviour
                         {
                             if (coldDowns[i])
                             {
-                                SoundManager.Instance.PlayEffect("Button1");
-                                if (sa > 0)
-                                    players[i].character++;
-                                else
-                                    players[i].character--;
                                 StartCoroutine(StarColdDown(i));
                             }
-                            if (players[i].character > Characters.Pina)
-                                players[i].character = Characters.SrPenguin;
-                            if (players[i].character < Characters.SrPenguin)
-                                players[i].character = Characters.Pina;
-                            characterSelectors[i].sprite = charactersImage[(int)players[i].character];
                         }
                     }
                 }
@@ -197,21 +173,14 @@ public class PartyController : MonoBehaviour
     {
         if (arg0.buildIndex > 0)
         {
-            SoundManager.Instance.PlayAudio(0);
             canvas.enabled = false;
         }
         else
         {
             //canvas.enabled = true;
             currentControllerIndex = 0;
-            for (int i = 0; i < characterSelectors.Length; i++)
-            {
-                characterSelectors[i].color = Color.white;
-                characterSelectors[i].gameObject.SetActive(false);
-            }
             players = null;
-            characterSelectorTouch.gameObject.SetActive(false);
-            characterSelectorTouch.color = Color.white;
+
             //StartCoroutine(DetectControllers());
         }
     }
@@ -221,7 +190,6 @@ public class PartyController : MonoBehaviour
     {
         if (GamePad.GetButtonDown(GamePad.Button.A, index))
         {
-            SoundManager.Instance.PlayEffect("Button3");
             if (!IsControllIn(false, index))
             {
                 AddPlayer(false, index);
@@ -235,7 +203,6 @@ public class PartyController : MonoBehaviour
                         if (players[i].controlIndex == index)
                         {
                             players[i].ready = true;
-                            characterSelectors[i].color = new Color(.2f, .2f, .2f);
                         }
                     }
                 }
@@ -247,7 +214,6 @@ public class PartyController : MonoBehaviour
     {
         if (GamePad.GetButtonDown(GamePad.Button.B, index))
         {
-            SoundManager.Instance.PlayEffect("Button3");
             if (IsControllIn(false, index))
             {
                 RemovePlayer(false, index);
@@ -274,7 +240,6 @@ public class PartyController : MonoBehaviour
                 if (players[i].ready && players[i].useKeyboard)
                 {
                     players[i].ready = false;
-                    characterSelectors[players[i].realIndex].color = Color.white;
                     return;
                 }
             }
@@ -286,7 +251,6 @@ public class PartyController : MonoBehaviour
                 if (players[i].ready && !players[i].useKeyboard && players[i].controlIndex == index)
                 {
                     players[i].ready = false;
-                    characterSelectors[players[i].realIndex].color = Color.white;
                     return;
                 }
             }
@@ -305,21 +269,13 @@ public class PartyController : MonoBehaviour
         }
         if (canvas.enabled)
         {
-            characterSelectors[cont.realIndex].gameObject.SetActive(false);
         }
         for (int i = cont.realIndex + 1; i < players.Count; i++)
         {
             //var prevPlayer = players[i].character;
 
-            characterSelectors[players[i].realIndex].gameObject.SetActive(false);
-            characterSelectors[players[i].realIndex].color = Color.white;
-
             players[i].realIndex--;
 
-            if (players[i].ready)
-                characterSelectors[players[i].realIndex].color = new Color(.2f, .2f, .2f);
-            characterSelectors[players[i].realIndex].sprite = charactersImage[(int)players[i].character];
-            characterSelectors[players[i].realIndex].gameObject.SetActive(true);
         }
         players.Remove(cont);
     }
@@ -336,8 +292,6 @@ public class PartyController : MonoBehaviour
         cont.useKeyboard = usek;
         cont.ready = false;
 
-        if (canvas.enabled)
-            characterSelectors[players.Count].gameObject.SetActive(true);
         players.Add(cont);
     }
 
@@ -348,20 +302,7 @@ public class PartyController : MonoBehaviour
         readingControls = true;
     }
 
-    public void JoinAndroidPlayer()
-    {
-        if (!IsControllIn(true, 0))
-        {
-            characterSelectorTouch.gameObject.SetActive(true);
-            if (players == null)
-                players = new List<PlayerInput>();
-            var cont = new PlayerInput();
-            cont.controlIndex = 0;
-            cont.realIndex = players.Count;
-            cont.useKeyboard = true;
-            players.Add(cont);
-        }
-    }
+
     public void ChangePicture(int ratio)
     {
         for (int i = 0; i < players.Count; i++)
@@ -370,16 +311,7 @@ public class PartyController : MonoBehaviour
                 if (players[i].ready)
                     return;
             }
-        for (int i = 0; i < players.Count; i++)
-        {
-            SoundManager.Instance.PlayEffect("Button1");
-            players[i].character += ratio;
-            if (players[i].character > Characters.Pina)
-                players[i].character = Characters.SrPenguin;
-            if (players[i].character < Characters.SrPenguin)
-                players[i].character = Characters.Pina;
-            characterSelectorTouch.sprite = charactersImage[(int)players[i].character];
-        }
+
     }
     public void LockPlayer()
     {
@@ -392,7 +324,6 @@ public class PartyController : MonoBehaviour
                     if (players[i].useKeyboard)
                     {
                         players[i].ready = true;
-                        characterSelectorTouch.color = new Color(.2f, .2f, .2f);
                     }
                 }
             }
