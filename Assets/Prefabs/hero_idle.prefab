@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 95219018769861630}
   m_Layer: 0
   m_Name: hero_idle
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -37,9 +37,9 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1279240526523656}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 50, y: 98.1, z: 0}
-  m_LocalScale: {x: 50, y: 50, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -381.35, y: -210.86, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   facingRight: 0
   attack: 0
-  moveForce: 365
+  moveForce: 150
   maxSpeed: 5
   attackForce: 2000
   groundCheck: {fileID: 0}

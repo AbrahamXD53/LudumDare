@@ -26,7 +26,7 @@ public class Spawner : MonoBehaviour {
             GameObject player = Instantiate(playerPrefab, new Vector2(spawnPoints[spawnerCounter].position.x, spawnPoints[spawnerCounter].position.y), Quaternion.identity);
             player.name += "" + playerCounter;
             player.transform.parent = gameObject.transform;
-            player.transform.localScale = new Vector3(50f, 50f, 1f);
+            player.transform.localScale = new Vector3(1f, 1f, 1f);
             player.GetComponent<SpriteRenderer>().sortingOrder = 1;
             player.GetComponent<CharacterMovementController>().controllers = controller;
             CharacterMovementController cmc = player.GetComponent<CharacterMovementController>();

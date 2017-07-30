@@ -68,7 +68,7 @@ public class CharacterMovementController : MonoBehaviour
     void FixedUpdate()
     {
         float h = 0.0f;
-        if (controllers.players.Count > playerNumber)
+        if (controllers != null && controllers.players.Count > playerNumber)
         {
             if (controllers != null && controllers.players[playerNumber].useKeyboard)
             {
