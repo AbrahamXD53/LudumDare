@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 50667318600979230}
   - component: {fileID: 61973708926047678}
   - component: {fileID: 114689728394338668}
+  - component: {fileID: 95219018769861630}
   m_Layer: 0
   m_Name: hero_idle
   m_TagString: Untagged
@@ -37,8 +38,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1279240526523656}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.18, y: 0.74, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 50, y: 98.1, z: 0}
+  m_LocalScale: {x: 50, y: 50, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -75,19 +76,36 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.019369006, y: -0.15495193}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.43, y: 0.64}
+    oldSize: {x: 1.9, y: 1.9}
     newSize: {x: 0.43, y: 0.64}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.31991327, y: 0.64}
+  m_Size: {x: 1.0005949, y: 1.4700992}
   m_EdgeRadius: 0
+--- !u!95 &95219018769861630
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1279240526523656}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d01116d0f2a7c5e4583e0862b88f3589, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114689728394338668
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -100,11 +118,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   facingRight: 0
-  jump: 0
+  attack: 0
   moveForce: 365
   maxSpeed: 5
-  jumpForce: 1000
+  attackForce: 2000
   groundCheck: {fileID: 0}
+  playerNumber: 0
+  controllers: {fileID: 0}
 --- !u!212 &212195316260329062
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -136,8 +156,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 4df305d58b9182043b7b5ad65f6fc276, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 21300000, guid: 4c29855e5ef3544479953e7c4eb1e775, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

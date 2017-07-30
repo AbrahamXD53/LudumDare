@@ -10,7 +10,7 @@ public class CharacterMovementController : MonoBehaviour
     public bool attack = false;
     public float moveForce = 365f;
     public float maxSpeed = 5f;
-    public float attackForce = 1000f;
+    public float attackForce = 10f;
     public Transform groundCheck;
     public int playerNumber = 0;
 
@@ -19,7 +19,7 @@ public class CharacterMovementController : MonoBehaviour
     //private Animator anim;
     private Rigidbody2D rb2d;
     private BoxCollider2D boxCollider;
-    private PartyController controllers;
+    public PartyController controllers;
     private float ypad = 0.12972f;
 
 
@@ -29,7 +29,7 @@ public class CharacterMovementController : MonoBehaviour
         //anim = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
-        controllers = GetComponentInParent<PartyController>();
+        controllers = null;
     }
 
     // Update is called once per frame
@@ -48,7 +48,7 @@ public class CharacterMovementController : MonoBehaviour
         //    grounded = false;
         //}
 
-        if (controllers.players.Count > playerNumber)
+        if (controllers != null && controllers.players.Count > playerNumber)
         {
             if (controllers.players[playerNumber].useKeyboard) {
                 if(Input.GetKey(KeyCode.Space))
@@ -71,7 +71,7 @@ public class CharacterMovementController : MonoBehaviour
         float h = 0.0f;
         if (controllers.players.Count > playerNumber)
         {
-            if (controllers.players[playerNumber].useKeyboard)
+            if (controllers != null && controllers.players[playerNumber].useKeyboard)
             {
                 h = Input.GetAxis("Horizontal");
             }
