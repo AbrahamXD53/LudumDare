@@ -10,16 +10,17 @@ public class CharacterMovementController : MonoBehaviour
     public float moveForce = 365f;
     public float maxSpeed = 5f;
     public float attackForce = 10f;
-    public Transform groundCheck;
+    //public Transform groundCheck;
     public int playerNumber = 0;
 
 
-    private bool grounded = false;
+    //private bool grounded = false;
     //private Animator anim;
     private Rigidbody2D rb2d;
     private BoxCollider2D boxCollider;
+    private Animator anim;
     public PartyController controllers;
-    private float ypad = 0.12972f;
+    //private float ypad = 0.12972f;
 
 
     // Use this for initialization
@@ -28,6 +29,7 @@ public class CharacterMovementController : MonoBehaviour
         //anim = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        anim = GetComponent<Animator>();
         controllers = null;
     }
 
@@ -105,6 +107,8 @@ public class CharacterMovementController : MonoBehaviour
             rb2d.AddForce(new Vector2(force, 0.0f));
             attack = false;
         }
+
+        anim.SetFloat("bot_speed", rb2d.velocity.x);
     }
 
 

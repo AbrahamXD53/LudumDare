@@ -27,6 +27,7 @@ public class Spawner : MonoBehaviour {
             player.name += "" + playerCounter;
             player.transform.parent = gameObject.transform;
             player.transform.localScale = new Vector3(1f, 1f, 1f);
+            player.GetComponent<SpriteRenderer>().sortingLayerName = "Front";
             player.GetComponent<SpriteRenderer>().sortingOrder = 1;
             player.GetComponent<CharacterMovementController>().controllers = controller;
             CharacterMovementController cmc = player.GetComponent<CharacterMovementController>();
