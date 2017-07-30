@@ -7,6 +7,8 @@ public class CharacterMovementController : MonoBehaviour
     public bool facingRight = false;
     [HideInInspector]
     public bool attack = false;
+    [HideInInspector]
+    public bool carry = false;
     public float moveForce = 365f;
     public float maxSpeed = 5f;
     public float attackForce = 10f;
@@ -19,6 +21,7 @@ public class CharacterMovementController : MonoBehaviour
     private Rigidbody2D rb2d;
     private BoxCollider2D boxCollider;
     private Animator anim;
+    private GameObject bomb = null;
     public PartyController controllers;
     //private float ypad = 0.12972f;
 
@@ -52,9 +55,13 @@ public class CharacterMovementController : MonoBehaviour
         if (controllers != null && controllers.players.Count > playerNumber)
         {
             if (controllers.players[playerNumber].useKeyboard) {
-                if(Input.GetKey(KeyCode.Space))
+                if(Input.GetKeyDown(KeyCode.Space))
                 {
                     attack = true;
+                }
+                if(Input.GetKeyDown(KeyCode.LeftControl))
+                {
+                    carry = true;
                 }
             }
             else
@@ -62,6 +69,10 @@ public class CharacterMovementController : MonoBehaviour
                 if(GamepadInput.GamePad.GetButtonDown(GamepadInput.GamePad.Button.A, controllers.players[playerNumber].controlIndex))
                 {
                     attack = true;
+                }
+                if (GamepadInput.GamePad.GetButtonDown(GamepadInput.GamePad.Button.X, controllers.players[playerNumber].controlIndex))
+                {
+                    carry = true;
                 }
             }
         }
@@ -108,7 +119,43 @@ public class CharacterMovementController : MonoBehaviour
             attack = false;
         }
 
-        anim.SetFloat("bot_speed", rb2d.velocity.x);
+        if (carry)
+        {
+            if (bomb == null)
+            {
+                // check if bonb in range
+                Vector2 center = transform.position;
+                float radius = GetComponent<SpriteRenderer>().size.x * 4.0f;
+                Collider2D[] hitColliders = Physics2D.OverlapCircleAll(center, radius);
+                foreach (Collider2D col in hitColliders)
+                {
+                    if (col.tag == "bomb")
+                    {
+                        col.GetComponent<BombTimer>().owner = this.gameObject;
+                        col.GetComponent<Rigidbody2D>().gravityScale = 0.0f;
+                        bomb = col.gameObject;
+                    }
+                }
+            }
+            else
+            {
+                float width = GetComponent<SpriteRenderer>().size.x;
+                if (facingRight)
+                {
+                    bomb.transform.position = new Vector3(transform.position.x + width, transform.position.y, 0.0f);
+                }
+                else
+                {
+                    bomb.transform.position = new Vector3(transform.position.x - width, transform.position.y, 0.0f);
+                }
+                bomb.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
+                bomb.GetComponent<BombTimer>().owner = null;
+                bomb = null;
+            }
+            carry = false;
+        }
+
+        anim.SetFloat("bot_speed", Mathf.Abs(rb2d.velocity.x));
     }
 
 

@@ -8,10 +8,12 @@ public class Spawner : MonoBehaviour {
     public int spawnerCounter = 0;
     public int playerCounter = 0;
     public PartyController controller;
+    private Camera cam;
 
     private void Start()
     {
         controller = GetComponent<PartyController>();
+        cam = GetComponentInChildren<Camera>();
     }
 
     private int getNextSpawner(int counter, Transform[] spawnPoints)
@@ -26,10 +28,13 @@ public class Spawner : MonoBehaviour {
             GameObject player = Instantiate(playerPrefab, new Vector2(spawnPoints[spawnerCounter].position.x, spawnPoints[spawnerCounter].position.y), Quaternion.identity);
             player.name += "" + playerCounter;
             player.transform.parent = gameObject.transform;
-            player.transform.localScale = new Vector3(1f, 1f, 1f);
+            player.transform.localScale = new Vector3(50f, 50f, 1f);
             player.GetComponent<SpriteRenderer>().sortingLayerName = "Front";
             player.GetComponent<SpriteRenderer>().sortingOrder = 1;
             player.GetComponent<CharacterMovementController>().controllers = controller;
+            CameraLocator cl = cam.GetComponent<CameraLocator>();
+            if(cl != null)
+                cl.targets.Add(player.transform);
             CharacterMovementController cmc = player.GetComponent<CharacterMovementController>();
             cmc.playerNumber = playerCounter;
             playerCounter++;
