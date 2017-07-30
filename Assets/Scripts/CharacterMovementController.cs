@@ -4,7 +4,6 @@ using System.Collections;
 public class CharacterMovementController : MonoBehaviour
 {
 
-    [HideInInspector]
     public bool facingRight = false;
     [HideInInspector]
     public bool attack = false;
