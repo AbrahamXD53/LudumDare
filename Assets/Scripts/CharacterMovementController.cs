@@ -7,18 +7,19 @@ public class CharacterMovementController : MonoBehaviour
     [HideInInspector]
     public bool facingRight = false;
     [HideInInspector]
-    public bool jump = false;
+    public bool attack = false;
     public float moveForce = 365f;
     public float maxSpeed = 5f;
-    public float jumpForce = 1000f;
+    public float attackForce = 1000f;
     public Transform groundCheck;
+    public int playerNumber = 0;
 
 
     private bool grounded = false;
     //private Animator anim;
     private Rigidbody2D rb2d;
     private BoxCollider2D boxCollider;
-
+    private PartyController controllers;
     private float ypad = 0.12972f;
 
 
@@ -28,33 +29,57 @@ public class CharacterMovementController : MonoBehaviour
         //anim = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
+        controllers = GetComponentInParent<PartyController>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        RaycastHit2D hit = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
-        float distance = Mathf.Abs(hit.point.y - transform.position.y);
+        //RaycastHit2D hit = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+        //float distance = Mathf.Abs(hit.point.y - transform.position.y);
 
-        Debug.Log("distance: " + (distance-ypad) + " height: " + boxCollider.size.y + " grounded: " + grounded);
-        if ((distance-ypad) < boxCollider.size.y)
-        {
-            grounded = true;
-        }
-        else
-        {
-            grounded = false;
-        }
+        //Debug.Log("distance: " + (distance-ypad) + " height: " + boxCollider.size.y + " grounded: " + grounded);
+        //if ((distance-ypad) < boxCollider.size.y)
+        //{
+        //    grounded = true;
+        //}
+        //else
+        //{
+        //    grounded = false;
+        //}
 
-        if (Input.GetKey(KeyCode.UpArrow) && grounded)
+        if (controllers.players.Count > playerNumber)
         {
-            jump = true;
+            if (controllers.players[playerNumber].useKeyboard) {
+                if(Input.GetKey(KeyCode.Space))
+                {
+                    attack = true;
+                }
+            }
+            else
+            {
+                if(GamepadInput.GamePad.GetButtonDown(GamepadInput.GamePad.Button.A, controllers.players[playerNumber].controlIndex))
+                {
+                    attack = true;
+                }
+            }
         }
     }
 
     void FixedUpdate()
     {
-        float h = Input.GetAxis("Horizontal");
+        float h = 0.0f;
+        if (controllers.players.Count > playerNumber)
+        {
+            if (controllers.players[playerNumber].useKeyboard)
+            {
+                h = Input.GetAxis("Horizontal");
+            }
+            else
+            {
+                h = GamepadInput.GamePad.GetAxis(GamepadInput.GamePad.Axis.LeftStick, controllers.players[playerNumber].controlIndex).x;
+            }
+        }
 
         //anim.SetFloat("Speed", Mathf.Abs(h));
 
@@ -74,11 +99,12 @@ public class CharacterMovementController : MonoBehaviour
         else if (h < 0 && facingRight)
             Flip();
 
-        if (jump)
+        if (attack)
         {
             //anim.SetTrigger("Jump");
-            rb2d.AddForce(new Vector2(0f, jumpForce));
-            jump = false;
+            float force = (facingRight) ? attackForce : -attackForce;
+            rb2d.AddForce(new Vector2(force, 0.0f));
+            attack = false;
         }
     }
 

@@ -93,6 +93,7 @@ public class PartyController : MonoBehaviour
                                 players[i].ready = true;
                             }
                         }
+                        Debug.Log("Keyboard added");
                     }
                 }
 
@@ -135,6 +136,7 @@ public class PartyController : MonoBehaviour
                         players[i].ready = true;
                     }
                 }
+                Debug.Log("Control added");
             }
         }
     }
