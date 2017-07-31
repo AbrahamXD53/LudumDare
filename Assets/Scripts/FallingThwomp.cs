@@ -6,6 +6,9 @@ public class FallingThwomp : MonoBehaviour {
 
     public float positionY;
     public float positionX;
+
+    private GameObject bomb = null;
+
     // Use this for initialization
     void Start () {
         positionY = transform.position.y;
@@ -24,11 +27,23 @@ public class FallingThwomp : MonoBehaviour {
             //regresa el enemigo a su posicion original
             transform.position = new Vector2(positionX, positionY);
         }
-        if(col.gameObject.tag == "Player")
+        if(col.gameObject.tag == "bomb")
         {
-            //destruye la isntancia del player
-            //Destroy(col.gameObject);
-            Debug.Log("ALV el men");
+            if(bomb != null)
+            {
+                float width = GetComponent<SpriteRenderer>().size.x;
+                if (GetComponent<CharacterMovementController>().facingRight)
+                {
+                    bomb.transform.position = new Vector3(transform.position.x + width, transform.position.y, 0.0f);
+                }
+                else
+                {
+                    bomb.transform.position = new Vector3(transform.position.x - width, transform.position.y, 0.0f);
+                }
+                bomb.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
+                bomb.GetComponent<BombTimer>().owner = null;
+                bomb = null;
+            }
         }
     }
 }
