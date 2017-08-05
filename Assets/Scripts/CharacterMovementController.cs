@@ -3,6 +3,10 @@ using System.Collections;
 
 public class CharacterMovementController : MonoBehaviour
 {
+    private static float MAX_DAMAGED_TIME = 1.5f;
+    private static float DAMAGED_STEP = 2.0f / 60.0f;
+    private static float MAX_ATTACK_TIME = 0.3f;
+    private static float ATTACKING_STEP = 1.0f / 60.0f;
 
     public bool facingRight = false;
     [HideInInspector]
@@ -12,19 +16,19 @@ public class CharacterMovementController : MonoBehaviour
     public float moveForce = 365f;
     public float maxSpeed = 5f;
     public float attackForce = 10f;
-    //public Transform groundCheck;
     public int playerNumber = 0;
 
-
-    //private bool grounded = false;
-    //private Animator anim;
     private Rigidbody2D rb2d;
     private BoxCollider2D boxCollider;
     private Animator anim;
     private GameObject bomb = null;
     public PartyController controllers;
-    //private float ypad = 0.12972f;
 
+    public bool damaged = false;
+    private float damagedTime = 0.0f;
+    public bool attacking = false;
+    private float attackingTime = 0.0f;
+    private bool reversed = false;
 
     // Use this for initialization
     void Awake()
@@ -39,23 +43,10 @@ public class CharacterMovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //RaycastHit2D hit = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
-        //float distance = Mathf.Abs(hit.point.y - transform.position.y);
-
-        //Debug.Log("distance: " + (distance-ypad) + " height: " + boxCollider.size.y + " grounded: " + grounded);
-        //if ((distance-ypad) < boxCollider.size.y)
-        //{
-        //    grounded = true;
-        //}
-        //else
-        //{
-        //    grounded = false;
-        //}
-
-        if (controllers != null && controllers.players.Count > playerNumber)
+        if (!damaged && controllers != null && controllers.players.Count > playerNumber)
         {
             if (controllers.players[playerNumber].useKeyboard) {
-                if(Input.GetKeyDown(KeyCode.Space))
+                if(!attacking && Input.GetKeyDown(KeyCode.Space))
                 {
                     attack = true;
                 }
@@ -66,7 +57,7 @@ public class CharacterMovementController : MonoBehaviour
             }
             else
             {
-                if(GamepadInput.GamePad.GetButtonDown(GamepadInput.GamePad.Button.A, controllers.players[playerNumber].controlIndex))
+                if(!attacking && GamepadInput.GamePad.GetButtonDown(GamepadInput.GamePad.Button.A, controllers.players[playerNumber].controlIndex))
                 {
                     attack = true;
                 }
@@ -80,8 +71,33 @@ public class CharacterMovementController : MonoBehaviour
 
     void FixedUpdate()
     {
+        float force = (facingRight) ? attackForce : -attackForce;
+        if (damaged)
+        {
+            if(damagedTime <= 0.0f)
+            {
+                damagedTime -= 0.0f;
+                damaged = false;
+                anim.SetBool("damaged", false);
+            }
+            damagedTime -= DAMAGED_STEP;
+
+        }
+        if(attacking)
+        {
+            force = force * (attackingTime/MAX_ATTACK_TIME);
+            force *= ((reversed) ? -1.0f : 1.0f);
+            rb2d.AddForce(new Vector2(force, 0.0f));
+            if (attackingTime <= 0.0f)
+            {
+                attackingTime = 0.0f;
+                attacking = false;
+            }
+            attackingTime -= ATTACKING_STEP;
+        }
+
         float h = 0.0f;
-        if (controllers != null && controllers.players.Count > playerNumber)
+        if (!attacking && !damaged && controllers != null && controllers.players.Count > playerNumber)
         {
             if (controllers != null && controllers.players[playerNumber].useKeyboard)
             {
@@ -92,8 +108,6 @@ public class CharacterMovementController : MonoBehaviour
                 h = GamepadInput.GamePad.GetAxis(GamepadInput.GamePad.Axis.LeftStick, controllers.players[playerNumber].controlIndex).x;
             }
         }
-
-        //anim.SetFloat("Speed", Mathf.Abs(h));
 
         if (h * rb2d.velocity.x < maxSpeed)
             rb2d.AddForce(Vector2.right * h * moveForce);
@@ -113,19 +127,19 @@ public class CharacterMovementController : MonoBehaviour
 
         if (attack)
         {
-            //anim.SetTrigger("Jump");
-            float force = (facingRight) ? attackForce : -attackForce;
             rb2d.AddForce(new Vector2(force, 0.0f));
             attack = false;
+            attacking = true;
+            attackingTime = MAX_ATTACK_TIME;
         }
 
         if (carry)
         {
             if (bomb == null)
             {
-                // check if bonb in range
+                // check if bomb in range
                 Vector2 center = transform.position;
-                float radius = GetComponent<SpriteRenderer>().size.x * 4.0f;
+                float radius = GetComponent<SpriteRenderer>().size.x * 3.0f;
                 Collider2D[] hitColliders = Physics2D.OverlapCircleAll(center, radius);
                 foreach (Collider2D col in hitColliders)
                 {
@@ -158,6 +172,24 @@ public class CharacterMovementController : MonoBehaviour
         anim.SetFloat("bot_speed", Mathf.Abs(rb2d.velocity.x));
     }
 
+    public void dizzy()
+    {
+        damaged = true;
+        damagedTime = MAX_DAMAGED_TIME;
+        anim.SetBool("damaged", true);
+    }
+    
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Player")
+        {
+            CharacterMovementController cmc = collision.gameObject.GetComponent<CharacterMovementController>();
+            if(attacking && !cmc.damaged)
+            {
+                cmc.dizzy();
+            }
+        }
+    }
 
     void Flip()
     {
@@ -165,5 +197,10 @@ public class CharacterMovementController : MonoBehaviour
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+    }
+
+    public void Reverse()
+    {
+        reversed = (reversed) ? false : true;
     }
 }
