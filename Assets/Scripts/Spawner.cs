@@ -8,6 +8,7 @@ public class Spawner : MonoBehaviour {
     public int spawnerCounter = 0;
     public int playerCounter = 0;
     public PartyController controller;
+    public Color[] colors;
     private Camera cam;
 
     private void Start()
@@ -32,6 +33,7 @@ public class Spawner : MonoBehaviour {
             player.GetComponent<SpriteRenderer>().sortingLayerName = "Front";
             player.GetComponent<SpriteRenderer>().sortingOrder = 1;
             player.GetComponent<CharacterMovementController>().controllers = controller;
+            player.GetComponent<SpriteRenderer>().color = colors[playerCounter % colors.Length];
             CameraLocator cl = cam.GetComponent<CameraLocator>();
             if(cl != null)
                 cl.targets.Add(player.transform);

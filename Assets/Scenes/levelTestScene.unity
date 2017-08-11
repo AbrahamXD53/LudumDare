@@ -268,6 +268,16 @@ Prefab:
       propertyPath: m_SortingOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 50427447020185596, guid: 092afc9d50672584098490f43e1191c9,
+        type: 2}
+      propertyPath: m_Mass
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 50427447020185596, guid: 092afc9d50672584098490f43e1191c9,
+        type: 2}
+      propertyPath: m_LinearDrag
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 092afc9d50672584098490f43e1191c9, type: 2}
   m_IsPrefabParent: 0
@@ -3094,6 +3104,11 @@ MonoBehaviour:
   spawnerCounter: 0
   playerCounter: 0
   controller: {fileID: 0}
+  colors:
+  - {r: 0, g: 0.04827571, b: 1, a: 1}
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 1, g: 1, b: 0, a: 1}
 --- !u!114 &1159786753
 MonoBehaviour:
   m_ObjectHideFlags: 0

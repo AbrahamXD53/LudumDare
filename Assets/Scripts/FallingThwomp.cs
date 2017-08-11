@@ -44,6 +44,13 @@ public class FallingThwomp : MonoBehaviour {
                 bomb.GetComponent<BombTimer>().owner = null;
                 bomb = null;
             }
+        } else if(col.gameObject.tag == "Player")
+        {
+            CharacterMovementController cmc = col.gameObject.GetComponent<CharacterMovementController>();
+            if (cmc != null)
+            {
+                cmc.Reverse();
+            }
         }
     }
 }

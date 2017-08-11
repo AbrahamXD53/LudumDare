@@ -26,7 +26,7 @@ public class WinConditions : MonoBehaviour {
         }
         if (col.gameObject.tag == "bomb" && name == "totem_Stand_Right")
         {
-            anim.SetTrigger(wonRight);
+            //anim.SetTrigger(wonRight);
             print("Right Team won");
         }
     }

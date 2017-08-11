@@ -92,6 +92,7 @@ public class CharacterMovementController : MonoBehaviour
             {
                 attackingTime = 0.0f;
                 attacking = false;
+                reversed = false;
             }
             attackingTime -= ATTACKING_STEP;
         }
